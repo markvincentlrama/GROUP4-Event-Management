@@ -2,7 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
+
+// Your custom authentication routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// The default Sanctum route (protected)
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
