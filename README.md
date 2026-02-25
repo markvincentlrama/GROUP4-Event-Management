@@ -1,60 +1,167 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Event Management System API (Backend)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Overview
 
-## About Laravel
+This is the Laravel-based RESTful API backend for an Event Management System. It was developed collaboratively by a team of 13 developers to manage events, participants, and related statistics.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The project focuses on implementing secure authentication (Laravel Sanctum), structured JSON responses, complex Eloquent relationships, and adhering to a strict GitHub feature-branching workflow.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Key Objectives Achieved
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* [x] Developed a RESTful API using Laravel.
+* [x] Implemented secure GitHub collaboration workflow with 13 contributors.
+* [x] Utilized feature branching and peer-review pull requests.
+* [x] Implemented standardized and structured JSON responses.
+* [x] Successfully resolved merge conflicts in a high-activity environment.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Getting Started / Installation Proof
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+To verify the functionality of this backend locally, follow these steps to set up the environment.
 
-## Laravel Sponsors
+### Prerequisites
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* PHP >= 8.1
+* Composer
+* MySQL or compatible database
 
-### Premium Partners
+### Setup Steps
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Clone the repository:**
+```bash
+git clone [YOUR REPOSITORY URL HERE]
+cd [YOUR PROJECT FOLDER NAME]
 
-## Contributing
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+2. **Install Dependencies:**
+```bash
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Environment Setup:**
+Copy the example env file and configure your database credentials.
+```bash
+cp .env.example .env
+# Open .env and set DB_DATABASE, DB_USERNAME, DB_PASSWORD
 
-## License
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# GROUP4-Event-Management" 
+
+4. **Generate Application Key:**
+```bash
+php artisan key:generate
+
+```
+
+
+5. **Run Migrations and Seeders (Crucial for Testing):**
+We have included seeders to populate the database with dummy users and events for immediate testing.
+```bash
+php artisan migrate --seed
+
+```
+
+
+6. **Serve the Application:**
+```bash
+php artisan serve
+
+```
+
+
+The API will be available at `http://localhost:8000/api`.
+
+---
+
+## Proof of Functionality: Testing & Validation
+
+We use a combination of automated tests and manual API testing to ensure system stability.
+
+  **CREATE**
+  <img src="https://res.cloudinary.com/dxgtvpyc3/image/upload/v1772025238/upload_xjhbmy.png" alt="Login API Proof" width="500">
+
+  **UPDATE**
+    <img src="https://res.cloudinary.com/dxgtvpyc3/image/upload/v1772025238/update_adt9cy.png" alt="Login API Proof" width="500">
+  
+  **DELETE**
+  <img src="https://res.cloudinary.com/dxgtvpyc3/image/upload/v1772025238/delete_vukvxs.png" alt="Login API Proof" width="500">
+
+#### Example Standardized Response Structure
+
+All API endpoints return a standardized JSON structure for consistency, as required by the project objectives.
+
+**Success Response Example (e.g., Fetching an Event):**
+
+```json
+{
+    "message": "Event created successfully",
+    "data": {
+        "event_name": "Grandest Birthday Bash",
+        "category": "ata siguro",
+        "event_date": "2026-05-20",
+        "location": "Manila Convention Center",
+        "updated_at": "2026-02-25T13:22:55.000000Z",
+        "created_at": "2026-02-25T13:22:55.000000Z",
+        "id": 2
+    }
+}
+```
+
+**Error Response Example (e.g., Validation Error):**
+
+```json
+{
+    "message": "Internal Server Error",
+    "error": "The event date field must be a valid date."
+}
+
+```
+
+---
+
+## Feature Implementation Status
+
+Based on the "System API Requirements" listed in the project brief.
+
+**Authentication & User Management**
+
+* [x] User registration (Sanctum)
+* [x] User login and token generation
+* [x] User logout (token revocation)
+
+**Event Management (CRUD)**
+
+* [x] Create new events
+* [x] Read/List all events (Public listing)
+* [x] View single event details
+* [x] Update event details
+* [x] Delete events
+
+**Participant Management**
+
+* [x] Register a participant to an event
+* [x] Event capacity tracking (prevent registration if full)
+
+**Advanced Features**
+
+* [x] Search functionality (by title/description)
+* [x] Filtering by date and category
+* [X] Event statistics endpoint
+* [x] API Resource Formatting (Standardized JSON)
+* [x] Form Request Validation
+
+---
+
+## Collaboration & Workflow
+
+This project successfully integrated the work of 13 developers using a structured GitHub workflow.
+
+* **Main Branches:** `main` (production ready), `develop` (staging/integration).
+* **Feature Branches:** Developers worked on isolated branches (e.g., `feature/dev1`, `feature/dev4`).
+
+
