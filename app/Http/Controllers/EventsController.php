@@ -27,7 +27,27 @@ public function index()
      * POST /api/events
      */
  
+public function search(Request $request)
+{
+    $query = $request->query('q'); 
 
+    if (!$query) {
+        return response()->json([
+            'message' => 'Search query is required'
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
+    $events = Event::where('event_name', 'LIKE', "%{$query}%")
+        ->orWhere('category', 'LIKE', "%{$query}%")
+        ->orderBy('event_date', 'asc')
+        ->get();
+
+    return response()->json([
+        'message' => 'Search results',
+        'total_results' => $events->count(),
+        'events' => $events
+    ], Response::HTTP_OK);
+}
 public function store(Request $request)
 {
     try {
