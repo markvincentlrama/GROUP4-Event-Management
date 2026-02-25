@@ -12,50 +12,38 @@ class EventsController extends Controller
     /**
      * GET /api/events
      */
- 
-public function index()
-{
-    // $events = Event::with('participants')->latest()->get();
+    public function index()
+    {
+        //
+    }
 
-    // return response()->json([
-    //     'message' => 'List of all events',
-    //     'total_events' => $events->count(),
-    //     'events' => $events,
-    // ], Response::HTTP_OK);
-}
     /**
      * POST /api/events
      */
- 
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'event_name' => 'required|string|max:255',
+                'category'   => 'required|string',
+                'event_date' => 'required|date',
+                'location'   => 'required|string|max:255',
+            ]);
 
-public function store(Request $request)
-{
-    try {
-        // Validate the incoming request
-        $validated = $request->validate([
-            'event_name' => 'required|string|max:255',
-            'category'   => 'required|string',
-            'event_date' => 'required|date',
-            'location'   => 'required|string|max:255',
-        ]);
+            $event = Event::create($validated);
 
-        // Create the event
-        $event = Event::create($validated);
+            return response()->json([
+                'message' => 'Event created successfully',
+                'data' => $event
+            ], Response::HTTP_CREATED);
 
-        // Return success response
-        return response()->json([
-            'message' => 'Event created successfully',
-            'data' => $event
-        ], Response::HTTP_CREATED);
-
-    } catch (\Exception $e) {
-        // Catch any internal server errors
-        return response()->json([
-            'message' => 'Internal Server Error',
-            'error' => $e->getMessage() // optional: include for debugging
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
-}
 
     /**
      * GET /api/events/{id}
@@ -101,6 +89,9 @@ public function store(Request $request)
         ], Response::HTTP_OK);
     }
 
+    /**
+     * DELETE /api/events/{id}
+     */
     public function destroy(string $id)
     {
         $event = Event::find($id);
@@ -118,41 +109,49 @@ public function store(Request $request)
         ], Response::HTTP_OK);
     }
 
+    /**
+     * POST /api/events/{id}/participants
+     */
     public function registerParticipant(Request $request, string $id)
-{
- 
-    $data = $request->validate([
-        'user_id' => 'required|integer|exists:users,id',
-    ]);
+    {
+        $data = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
 
-    $event = Event::find($id);
-    if (! $event) {
+        $event = Event::find($id);
+        if (! $event) {
+            return response()->json([
+                'message' => 'Event not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $alreadyRegistered = Eve_part::where('event_id', $event->id)
+            ->where('user_id', $data['user_id'])
+            ->exists();
+
+        if ($alreadyRegistered) {
+            return response()->json([
+                'message' => 'User is already registered for this event',
+            ], Response::HTTP_CONFLICT);
+        }
+
+        // 🔥 DEV 7 FEATURE: Limit to 10 participants per event
+        $currentCount = Eve_part::where('event_id', $event->id)->count();
+
+        if ($currentCount >= 10) {
+            return response()->json([
+                'message' => 'Event already reached maximum of 10 participants.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $participant = Eve_part::create([
+            'event_id' => $event->id,
+            'user_id'  => $data['user_id'],
+        ]);
+
         return response()->json([
-            'message' => 'Event not found',
-        ], Response::HTTP_NOT_FOUND);
+            'message' => 'Participant registered successfully',
+            'data'    => $participant,
+        ], Response::HTTP_CREATED);
     }
-
-    $alreadyRegistered = Eve_part::where('event_id', $event->id)
-        ->where('user_id', $data['user_id'])
-        ->exists();
-
-    if ($alreadyRegistered) {
-        return response()->json([
-            'message' => 'User is already registered for this event',
-        ], Response::HTTP_CONFLICT);
-    }
-
- 
-    $participant = Eve_part::create([
-        'event_id' => $event->id,
-        'user_id'  => $data['user_id'],
-    ]);
-
-    return response()->json([
-        'message' => 'Participant registered successfully',
-        'data'    => $participant,
-    ], Response::HTTP_CREATED);
-}
-
-  
 }
