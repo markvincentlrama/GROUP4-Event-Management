@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    protected $primaryKey = 'id';
+    protected $table = 'events';
+
     protected $fillable = [
         'event_name',
         'category',
@@ -14,4 +15,9 @@ class Event extends Model
         'location',
     ];
 
+    // One event has many participants
+    public function participants()
+    {
+        return $this->hasMany(Eve_part::class, 'event_id');
+    }
 }
