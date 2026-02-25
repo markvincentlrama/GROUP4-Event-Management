@@ -6,24 +6,20 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Event;
 use App\Models\Eve_part;
+use App\Http\Resources\EventResource;
 
 class EventsController extends Controller
 {
     /**
      * GET /api/events
      */
- 
-public function index()
-{
-    $events = Event::with('participants')->latest()->get();
+    public function index()
+    {
+        $events = Event::with('participants')->latest()->get();
 
-    return response()->json([
-        'message' => 'Events retrieved successfully',
-        'total_events' => $events->count(),
-        'events' => $events,
-    ], Response::HTTP_OK);
- 
-}
+        return EventResource::collection($events);
+    }
+
     /**
      * POST /api/events
      */
@@ -62,15 +58,15 @@ public function store(Request $request)
 
             $event = Event::create($validated);
 
-            return response()->json([
-                'message' => 'Event created successfully',
-                'data' => $event
-            ], Response::HTTP_CREATED);
+            return (new EventResource($event))
+                ->response()
+                ->setStatusCode(Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
             return response()->json([
+                'status' => 'error',
                 'message' => 'Internal Server Error',
-                'error' => $e->getMessage()
+                'errors' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,11 +80,13 @@ public function store(Request $request)
 
         if (!$event) {
             return response()->json([
-                'message' => 'Event not found'
+                'status' => 'error',
+                'message' => 'Event not found',
+                'errors' => null
             ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($event, Response::HTTP_OK);
+        return new EventResource($event);
     }
 
     /**
@@ -100,7 +98,9 @@ public function store(Request $request)
 
         if (!$event) {
             return response()->json([
-                'message' => 'Event not found'
+                'status' => 'error',
+                'message' => 'Event not found',
+                'errors' => null
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -113,10 +113,7 @@ public function store(Request $request)
 
         $event->update($validated);
 
-        return response()->json([
-            'message' => 'Event updated successfully',
-            'data' => $event
-        ], Response::HTTP_OK);
+        return new EventResource($event);
     }
 
     /**
@@ -128,14 +125,18 @@ public function store(Request $request)
 
         if (!$event) {
             return response()->json([
-                'message' => 'Event not found'
+                'status' => 'error',
+                'message' => 'Event not found',
+                'errors' => null
             ], Response::HTTP_NOT_FOUND);
         }
 
         $event->delete();
 
         return response()->json([
-            'message' => 'Event deleted successfully'
+            'status' => 'success',
+            'message' => 'Event deleted successfully',
+            'data' => null
         ], Response::HTTP_OK);
     }
 
@@ -151,7 +152,9 @@ public function store(Request $request)
         $event = Event::find($id);
         if (! $event) {
             return response()->json([
+                'status' => 'error',
                 'message' => 'Event not found',
+                'errors' => null
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -161,16 +164,20 @@ public function store(Request $request)
 
         if ($alreadyRegistered) {
             return response()->json([
+                'status' => 'error',
                 'message' => 'User is already registered for this event',
+                'errors' => null
             ], Response::HTTP_CONFLICT);
         }
 
-        // 🔥 DEV 7 FEATURE: Limit to 10 participants per event
+        // Limit to 10 participants
         $currentCount = Eve_part::where('event_id', $event->id)->count();
 
         if ($currentCount >= 10) {
             return response()->json([
-                'message' => 'Event already reached maximum of 10 participants.'
+                'status' => 'error',
+                'message' => 'Event already reached maximum of 10 participants.',
+                'errors' => null
             ], Response::HTTP_BAD_REQUEST);
         }
 
@@ -179,9 +186,11 @@ public function store(Request $request)
             'user_id'  => $data['user_id'],
         ]);
 
-        return response()->json([
-            'message' => 'Participant registered successfully',
-            'data'    => $participant,
-        ], Response::HTTP_CREATED);
+        // Reload event with participants
+        $event->load('participants');
+
+        return (new EventResource($event))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 }
