@@ -12,11 +12,18 @@ class EventsController extends Controller
     /**
      * GET /api/events
      */
-    public function index()
-    {
-        //
-    }
+ 
+public function index()
+{
+    $events = Event::with('participants')->latest()->get();
 
+    return response()->json([
+        'message' => 'Events retrieved successfully',
+        'total_events' => $events->count(),
+        'events' => $events,
+    ], Response::HTTP_OK);
+ 
+}
     /**
      * POST /api/events
      */
