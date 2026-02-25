@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Models\Event;
+
+class EventsController extends Controller
+{
+    /**
+     * GET /api/events
+     */
+ 
+public function index()
+{
+    // $events = Event::with('participants')->latest()->get();
+
+    // return response()->json([
+    //     'message' => 'List of all events',
+    //     'total_events' => $events->count(),
+    //     'events' => $events,
+    // ], Response::HTTP_OK);
+}
+    /**
+     * POST /api/events
+     */
+ 
+
+public function store(Request $request)
+{
+    try {
+        // Validate the incoming request
+        $validated = $request->validate([
+            'event_name' => 'required|string|max:255',
+            'category'   => 'required|string',
+            'event_date' => 'required|date',
+            'location'   => 'required|string|max:255',
+        ]);
+
+        // Create the event
+        $event = Event::create($validated);
+
+        // Return success response
+        return response()->json([
+            'message' => 'Event created successfully',
+            'data' => $event
+        ], Response::HTTP_CREATED);
+
+    } catch (\Exception $e) {
+        // Catch any internal server errors
+        return response()->json([
+            'message' => 'Internal Server Error',
+            'error' => $e->getMessage() // optional: include for debugging
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
+    /**
+     * GET /api/events/{id}
+     */
+    public function show(string $id)
+    {
+        $event = Event::with('participants')->find($id);
+
+        if (!$event) {
+            return response()->json([
+                'message' => 'Event not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($event, Response::HTTP_OK);
+    }
+
+    /**
+     * PUT/PATCH /api/events/{id}
+     */
+    public function update(Request $request, string $id)
+    {
+        $event = Event::find($id);
+
+        if (!$event) {
+            return response()->json([
+                'message' => 'Event not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $validated = $request->validate([
+            'event_name' => 'sometimes|required|string|max:255',
+            'category'   => 'sometimes|required|string',
+            'event_date' => 'sometimes|required|date',
+            'location'   => 'sometimes|required|string|max:255',
+        ]);
+
+        $event->update($validated);
+
+        return response()->json([
+            'message' => 'Event updated successfully',
+            'data' => $event
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * DELETE /api/events/{id}
+     */
+    public function destroy(string $id)
+    {
+        $event = Event::find($id);
+
+        if (!$event) {
+            return response()->json([
+                'message' => 'Event not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $event->delete();
+
+        return response()->json([
+            'message' => 'Event deleted successfully'
+        ], Response::HTTP_OK);
+    }
+
+    /* -----------------------------
+       API DOES NOT USE THESE
+       ----------------------------- */
+
+    public function create() {}
+    public function edit(string $id) {}
+}
