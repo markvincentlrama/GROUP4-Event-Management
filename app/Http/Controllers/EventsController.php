@@ -154,5 +154,29 @@ public function store(Request $request)
     ], Response::HTTP_CREATED);
 }
 
+
+public function filter(Request $request)
+{
+    $query = Event::with('participants');
+
+   
+    if ($request->filled('event_date')) {
+        $query->whereDate('event_date', $request->event_date);
+    }
+
+  
+    if ($request->filled('category')) {
+        $query->where('category', $request->category);
+    }
+
+    $events = $query->latest()->get();
+
+    return response()->json([
+        'message' => 'Filtered events retrieved successfully',
+        'total_events' => $events->count(),
+        'events' => $events,
+    ], Response::HTTP_OK);
+}
+
   
 }
