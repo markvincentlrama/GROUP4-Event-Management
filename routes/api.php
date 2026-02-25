@@ -19,5 +19,5 @@ Route::post('/events', [EventsController::class, 'store']);    // POST /api/even
 Route::put('/events/{id}', [EventsController::class, 'update']);  // PUT /api/events/{id}
 Route::patch('/events/{id}', [EventsController::class, 'update']); // PATCH /api/events/{id}
 Route::delete('/events/{id}', [EventsController::class, 'destroy']); // DELETE /api/events/{id}
-
+Route::get('/events/search', [EventsController::class, 'search']);
 Route::post('/events/{id}/participants', [EventsController::class, 'registerParticipant']);
