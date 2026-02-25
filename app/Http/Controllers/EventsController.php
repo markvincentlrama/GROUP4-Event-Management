@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Event;
+use App\Models\Eve_part;
 
 class EventsController extends Controller
 {
@@ -100,9 +101,6 @@ public function store(Request $request)
         ], Response::HTTP_OK);
     }
 
-    /**
-     * DELETE /api/events/{id}
-     */
     public function destroy(string $id)
     {
         $event = Event::find($id);
@@ -120,10 +118,41 @@ public function store(Request $request)
         ], Response::HTTP_OK);
     }
 
-    /* -----------------------------
-       API DOES NOT USE THESE
-       ----------------------------- */
+    public function registerParticipant(Request $request, string $id)
+{
+ 
+    $data = $request->validate([
+        'user_id' => 'required|integer|exists:users,id',
+    ]);
 
-    public function create() {}
-    public function edit(string $id) {}
+    $event = Event::find($id);
+    if (! $event) {
+        return response()->json([
+            'message' => 'Event not found',
+        ], Response::HTTP_NOT_FOUND);
+    }
+
+    $alreadyRegistered = Eve_part::where('event_id', $event->id)
+        ->where('user_id', $data['user_id'])
+        ->exists();
+
+    if ($alreadyRegistered) {
+        return response()->json([
+            'message' => 'User is already registered for this event',
+        ], Response::HTTP_CONFLICT);
+    }
+
+ 
+    $participant = Eve_part::create([
+        'event_id' => $event->id,
+        'user_id'  => $data['user_id'],
+    ]);
+
+    return response()->json([
+        'message' => 'Participant registered successfully',
+        'data'    => $participant,
+    ], Response::HTTP_CREATED);
+}
+
+  
 }
