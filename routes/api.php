@@ -5,14 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventsController;
 
-// Your custom authentication routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-// The default Sanctum route (protected)
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('/event-stats', [EventStatsController::class, 'index']);
+
+// Your custom authentication routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/events', [EventsController::class, 'store']);    // POST /api/events
 Route::put('/events/{id}', [EventsController::class, 'update']);  // PUT /api/events/{id}
