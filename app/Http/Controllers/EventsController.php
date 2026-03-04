@@ -47,29 +47,20 @@ class EventsController extends Controller
 
 public function store(Request $request)
 {
-    try {
-        // Validate the incoming request
-        $validated = $request->validate([ 
-            'event_name' => 'required|string|max:255',
-            'category'   => 'required|string',
-            'event_date' => 'required|date_format:Y-m-d H:i:s',
-            'location'   => 'required|string|max:255',
-        ]);
+    // Laravel automatically handles validation and returns 422 if it fails
+    $validated = $request->validate([ 
+        'event_name' => 'required|string|max:255',
+        'category'   => 'required|string',
+        'event_date' => 'required|date_format:Y-m-d H:i:s',
+        'location'   => 'required|string|max:255',
+    ]);
 
-            $event = Event::create($validated);
+    // Create the event
+    $event = Event::create($validated);
 
-            return (new EventResource($event))
-                ->response()
-                ->setStatusCode(Response::HTTP_CREATED);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Internal Server Error',
-                'errors' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    // Return the model directly with a 201 Created status
+    return response()->json($event, 201);
+}
 
     /**
      * GET /api/events/{id}
