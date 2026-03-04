@@ -12,7 +12,7 @@ class Event extends Model
         'event_name',
         'category',
         'event_date',
-        'location',
+        'location', 
     ];
 
     // One event has many participants

@@ -49,10 +49,10 @@ public function store(Request $request)
 {
     try {
         // Validate the incoming request
-        $validated = $request->validate([
+        $validated = $request->validate([ 
             'event_name' => 'required|string|max:255',
             'category'   => 'required|string',
-            'event_date' => 'required|date',
+            'event_date' => 'required|date_format:Y-m-d H:i:s',
             'location'   => 'required|string|max:255',
         ]);
 
