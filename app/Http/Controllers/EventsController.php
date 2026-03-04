@@ -104,7 +104,7 @@ public function store(Request $request)
 
         $event->update($validated);
 
-        return new EventResource($event);
+        return response()->json($event, 201);
     }
 
     /**
@@ -119,7 +119,7 @@ public function store(Request $request)
                 'status' => 'error',
                 'message' => 'Event not found',
                 'errors' => null
-            ], Response::HTTP_NOT_FOUND);
+            ], 404);
         }
 
         $event->delete();
@@ -128,7 +128,7 @@ public function store(Request $request)
             'status' => 'success',
             'message' => 'Event deleted successfully',
             'data' => null
-        ], Response::HTTP_OK);
+        ], 200);
     }
 
     /**
